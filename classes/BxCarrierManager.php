@@ -6,11 +6,8 @@
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  BxCarrierManagerModule
- * @package   BxCarrierManager
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 require_once dirname(__FILE__) . '/BxCarrierModel.php';
 require_once dirname(__FILE__) . '/BxCarrier.php';
 
@@ -20,19 +17,13 @@ require_once dirname(__FILE__) . '/BxCarrier.php';
  * @copyright 2022 Blue Express
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category BxCarrierManagerModule
- * @package  BxCarrierManager
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
 class BxCarrierManager
 {
     private $carrier_model;
 
-    private $services = array(
-        "EX" => "Express",
-        "MD" => "SameDay",
-        "PY" => "Prioritario",
-    );
+    private $services = ['EX' => 'Express', 'MD' => 'SameDay', 'PY' => 'Prioritario'];
 
     public function __construct($module = null)
     {
@@ -40,7 +31,7 @@ class BxCarrierManager
         $this->carrier_model = new BxCarrierModel();
     }
 
-    /* Elimina el carrier  */
+     /* Elimina el carreir */
     public function deleteEpCarrier($id_ps_carrier)
     {
         $bx_carrier = new BxCarrier($id_ps_carrier);
@@ -59,7 +50,7 @@ class BxCarrierManager
     {
         $ps_carrier = new Carrier($id_local_carrier);
         $ps_carrier->delete();
-        $this->deleteLogo($id_local_carrier . ".jpg");
+        $this->deleteLogo($id_local_carrier . '.jpg');
     }
 
     /* Elimina todos los carrier registrados */
@@ -84,14 +75,13 @@ class BxCarrierManager
             $ep_carrier->delete();
             $ps_carrier->delete();
 
-            $this->deleteLogo($carrier['id_local_carrier'] . ".jpg");
+            $this->deleteLogo($carrier['id_local_carrier'] . '.jpg');
         }
     }
 
     /* Agrega un carrier en la estrcutura de prestashop */
     public function addPsCarrier($name, $module_name, $delay)
     {
-
         if (!$name || !$module_name) {
             return false;
         }
@@ -101,7 +91,7 @@ class BxCarrierManager
         $carrier->id_tax_rules_group = 0;
         $carrier->active = 1;
         $carrier->deleted = 0;
-        $carrier->url = "https://www.bluex.cl/seguimiento/?n_seguimiento=@";
+        $carrier->url = 'https://www.bluex.cl/seguimiento/?n_seguimiento=@';
 
         $carrier->delay[1] = $delay;
 
@@ -120,10 +110,7 @@ class BxCarrierManager
         foreach ($groups as $group) {
             Db::getInstance()->insert(
                 'carrier_group',
-                array(
-                    'id_carrier' => (int) $carrier->id,
-                    'id_group' => (int) $group['id_group']
-                )
+                ['id_carrier' => (int) $carrier->id, 'id_group' => (int) $group['id_group']]
             );
         }
 
@@ -143,30 +130,15 @@ class BxCarrierManager
         foreach ($zones as $zone) {
             Db::getInstance()->insert(
                 'carrier_zone',
-                array(
-                    'id_carrier' => (int) $carrier->id,
-                    'id_zone' => (int) $zone['id_zone']
-                )
+                ['id_carrier' => (int) $carrier->id, 'id_zone' => (int) $zone['id_zone']]
             );
             Db::getInstance()->insert(
                 'delivery',
-                array(
-                    'id_carrier' => (int) $carrier->id,
-                    'id_range_price' => (int) $rangePrice->id,
-                    'id_range_weight' => null,
-                    'id_zone' => (int) $zone['id_zone'],
-                    'price' => '0'
-                )
+                ['id_carrier' => (int) $carrier->id, 'id_range_price' => (int) $rangePrice->id, 'id_range_weight' => null, 'id_zone' => (int) $zone['id_zone'], 'price' => '0']
             );
             Db::getInstance()->insert(
                 'delivery',
-                array(
-                    'id_carrier' => (int) $carrier->id,
-                    'id_range_price' => null,
-                    'id_range_weight' => (int) $rangeWeight->id,
-                    'id_zone' => (int) $zone['id_zone'],
-                    'price' => '0'
-                )
+                ['id_carrier' => (int) $carrier->id, 'id_range_price' => null, 'id_range_weight' => (int) $rangeWeight->id, 'id_zone' => (int) $zone['id_zone'], 'price' => '0']
             );
         }
 
@@ -176,7 +148,7 @@ class BxCarrierManager
     /* Crea los carriers que están en la API */
     public function installRemoteCarriers($carrier_list)
     {
-        $generic_carriers = array();
+        $generic_carriers = [];
         foreach ($carrier_list as $remote) {
             $services = $this->module->BxApi->getServices();
             foreach ($services as $service) {
@@ -185,20 +157,20 @@ class BxCarrierManager
                 }
                 if (!$this->carrierBxExists($remote['id'], $service->servicio)) {
                     $this->addBxCarrier(
-                        "",
+                        '',
                         $remote['id'],
                         0,
                         $service->servicio,
-                        "D",
+                        'D',
                         $remote['nombre']
                     );
 
                     $ps_carrier_id = $this->addPsCarrier(
-                        "BLUE EXPRESS - " . $service->servicio,
+                        'BLUE EXPRESS - ' . $service->servicio,
                         $this->module->name,
                         $service->servicio
                     );
-                    $generic_carriers[] = array(
+                    $generic_carriers[] = [
                         'ps_id' => $ps_carrier_id,
                         'remote_id' => '',
                         'has_relay' => 1,
@@ -206,7 +178,7 @@ class BxCarrierManager
                         'modality' => 'D',
                         'name' => '',
                         'active' => 1,
-                    );
+                    ];
                 }
             }
         }
@@ -217,24 +189,22 @@ class BxCarrierManager
     public function carrierBxExists($bx_carrier_id, $service)
     {
         $id = $this->carrier_model->getValue(
-            "id_carrier",
-            "id_remote_carrier='$bx_carrier_id' and service_type='$service'"
+            'id_carrier',
+            'id_remote_carrier = ' . $bx_carrier_id . ' and service_type = ' . $service
         );
-        $res = false;
 
+        $res = false;
         if ($id > 0) {
             $res = true;
         }
-
         return $res;
     }
 
     public function carrierGenericExists($service, $modality)
     {
         $id = $this->carrier_model->getValue(
-            "id_carrier",
-            "id_remote_carrier='' and service_type='" . $service .
-            "' and modality='" . $modality . "'"
+            'id_carrier',
+            'id_remote_carrier = "" and service_type = ' . $service . ' and modality = ' . $modality
         );
         $res = false;
 
@@ -249,9 +219,8 @@ class BxCarrierManager
     public function getGenericCarrierId($service, $modality)
     {
         $id = $this->carrier_model->getValue(
-            "id_local_carrier",
-            "id_remote_carrier='' and service_type='" . $service .
-            "' and modality='" . $modality . "'"
+            'id_local_carrier',
+            'id_remote_carrier = "" and service_type = ' . $service . ' and modality = ' . $modality
         );
 
         return $id;
@@ -259,8 +228,7 @@ class BxCarrierManager
 
     public function addBxCarrier($idL, $idR, $hasR, $sType, $mD, $name, $active = 0)
     {
-        $descript = trim($name . " " . $this->services[$sType]);
-
+        $descript = trim($name . ' ' . $this->services[$sType]);
         $Bx_carrier = new BxCarrier();
         $Bx_carrier->id_local = $idL;
         $Bx_carrier->id_remote = $idR;
@@ -288,8 +256,8 @@ class BxCarrierManager
     public function getCarrierByRemoteid($remote_id)
     {
         $id_db = $this->carrier_model->getValue(
-            "id_carrier",
-            "id_remote_carrier='$remote_id'"
+            'id_carrier',
+            'id_remote_carrier = ' . $remote_id
         );
 
         return new BxCarrier(null, $id_db);
@@ -297,11 +265,11 @@ class BxCarrierManager
 
     public function getRemoteCarriers()
     {
-        $carrier_list = array();
+        $carrier_list = [];
 
         $result = $this->carrier_model->getAllCarriers();
         foreach ($result as $carrier) {
-            if ($carrier['id_remote_carrier'] != "") {
+            if ($carrier['id_remote_carrier'] != '') {
                 $carrier_list[] = $carrier;
             }
         }
@@ -311,15 +279,15 @@ class BxCarrierManager
     public function getCarrierLocalId($id_carrier)
     {
         return $this->carrier_model->getValue(
-            "id_local_carrier",
-            "id_carrier=" . $id_carrier
+            'id_local_carrier',
+            'id_carrier = ' . $id_carrier
         );
     }
 
     public function updateCarrierLocal($old, $new)
     {
         $model = new BxCarrierModel();
-        $model->update("id_local_carrier=$new", "id_local_carrier=$old");
+        $model->update('id_local_carrier=$new', 'id_local_carrier=$old');
     }
 
     public function activeRemoteCarriers()
@@ -336,12 +304,12 @@ class BxCarrierManager
             );
             $my_carrier->id_local = $ps_carrier_id;
             $my_carrier->update();
-            $lg = $carrier['id_remote_carrier'] . ".png";
+            $lg = $carrier['id_remote_carrier'] . '.png';
 
             $this->copyLogo(
-                "https://www.enviopack.com/imgs/" . $lg,
+                'https://www.enviopack.com/imgs/' . $lg,
                 $ps_carrier_id,
-                ".jpg"
+                '.jpg'
             );
 
             $my_carrier->activate();
@@ -350,7 +318,7 @@ class BxCarrierManager
 
     public function getGenericCarriers()
     {
-        $carrier_list = array();
+        $carrier_list = [];
         $result = $this->carrier_model->getAllCarriers();
         foreach ($result as $carrier) {
             if (!$carrier['id_remote_carrier'] and !$carrier['has_relaypoint']) {
@@ -369,16 +337,14 @@ class BxCarrierManager
             $my_carrier = new BxCarrier(null, $carrier['id_carrier']);
 
             $ps_carrier_id = $this->addPsCarrier(
-                "Envio a domicilio",
+                'Envio a domicilio',
                 $this->module->name,
                 $this->services[$carrier['service_type']]
             );
             $this->copyLogo(
                 dirname(__FILE__) . '/../truck.png',
-                $ps_carrier_id,
-                ".jpg"
+                $ps_carrier_id, '.jpg'
             );
-
             $my_carrier->id_local = $ps_carrier_id;
             $my_carrier->update();
             $my_carrier->activate();

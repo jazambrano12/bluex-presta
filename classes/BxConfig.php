@@ -1,37 +1,21 @@
 <?php
 /**
- * Tenemos la classe BxConfig
- * PHP versions 7.x
- * @author   BlueExpress
- * @copyright 2022 Blue Express
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
- * @category  BxConfigModule
- * @package   BxConfig
- * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
- */
-
-/**
  * BxConfig
  * @author   BlueExpress
  * @copyright 2022 Blue Express
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category BxConfigModule
- * @package  BxConfig
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 class BxConfig
 {
-
     protected $module;
     protected $BxCarrierManager;
     protected $BxRelayManager;
 
-    const ESTIMATION_SUM_DIMS = 1;
-    const ESTIMATION_MAX_DIMS = 2;
-    const ESTIMATION_DEFAULT_PACKET = 3;
+    public const ESTIMATION_SUM_DIMS = 1;
+    public const ESTIMATION_MAX_DIMS = 2;
+    public const ESTIMATION_DEFAULT_PACKET = 3;
 
     public function __construct($module)
     {
@@ -57,7 +41,7 @@ class BxConfig
 
     public function displayConfigurationForm()
     {
-        $fields_form = array();
+        $fields_form = [];
         $default_lang = (int) Configuration::get('PS_LANG_DEFAULT');
         $fields_form[0] = $this->authForm();
 
@@ -85,15 +69,15 @@ class BxConfig
         $helper->show_toolbar = false;
         $helper->toolbar_scroll = false;
         $helper->submit_action = 'submit' . $this->module->name;
-        $helper->toolbar_btn = array(
-            'save' => array(
+        $helper->toolbar_btn = [
+            'save' => [
                 'desc' => $this->module->l('Save'),
                 'href' => AdminController::$currentIndex .
                 '&configure=' . $this->module->name .
                 '&save' . $this->module->name .
                 '&token=' . Tools::getAdminTokenLite('AdminModules'),
-            ),
-        );
+            ],
+        ];
 
         // Load current value
         $bPrice = Configuration::get('BX_BRANCH_PRICE');
@@ -124,84 +108,74 @@ class BxConfig
 
     private function generalConfig()
     {
-
         $default_lang = (int) Configuration::get('PS_LANG_DEFAULT');
 
         $objState = new OrderStateCore();
         $state_list = $objState->getOrderStates($default_lang);
+        $status_list = [];
 
         foreach ($state_list as $state) {
-            $status_list = array();
-            $status_list[] = array(
+            $status_list[] = [
                 'id_option' => $state['id_order_state'],
                 'name' => $state['name'],
-            );
+            ];
         }
 
-        $packet_estimation_options = array(
-            array(
-                'id_option' => self::ESTIMATION_SUM_DIMS,
-                'name' => 'Estimar dimensiones en base a la 
-                sumatoria de las dimensiones de los productos'
-            ),
-            array(
-                'id_option' => self::ESTIMATION_MAX_DIMS,
-                'name' => 'Estimar en base a la dimension mas alta de cada producto'
-            ),
-        );
+        $packet_estimation_options = [
+            ['id_option' => self::ESTIMATION_SUM_DIMS, 'name' => 'Estimar dimensiones en base a la sumatoria de las dimensiones de los productos'],
+            ['id_option' => self::ESTIMATION_MAX_DIMS, 'name' => 'Estimar en base a la dimension mas alta de cada producto'],
+        ];
 
-        $config_options = array(
-            "BX_DEF_STATE" => $status_list,
-            "BX_PAID_STATE" => $status_list,
-            "BX_PACKET_ESTIMATION_METHOD" => $packet_estimation_options,
-        );
+        $config_options = [
+            'BX_DEF_STATE' => $status_list,
+            'BX_PAID_STATE' => $status_list,
+            'BX_PACKET_ESTIMATION_METHOD' => $packet_estimation_options,
+        ];
         // Guardo los valores default si no los tiene guardados
         $this->saveDefaultConfigValues($config_options);
-        $desc ='Estado que será asignado al pedido
-        una vez que haya sido procesado por Blue Express';
+        $desc = 'Estado que será asignado al pedido una vez que haya sido procesado por Blue Express';
 
-        $form = array(
-            'form' => array(
-                'legend' => array(
+        $form = [
+            'form' => [
+                'legend' => [
                     'title' => $this->module->l('Configuración general'),
                     'icon' => 'icon-envelope',
-                ),
+                ],
                 'description' => $this->module->l(''),
-                'input' => array(
-
-                    array(
+                'input' => [
+                    [
                         'type' => 'select',
                         'label' => $this->module->l('Estado'),
                         'name' => 'BX_DEF_STATE',
                         'desc' => $desc,
-                        'options' => array(
+                        'options' => [
                             'query' => $status_list,
                             'id' => 'id_option',
                             'name' => 'name',
-                        ),
+                        ],
                         'required' => true,
-                    ),
-                    array(
+                    ],
+                    [
                         'type' => 'select',
                         'label' => $this->module->l('Estado pagado'),
                         'name' => 'BX_PAID_STATE',
                         'desc' => 'Estado que se utiliza para indicar que un pedido
                          se encuentra pago y listo para ser enviado',
-                        'options' => array(
+                        'options' => [
                             'query' => $status_list,
                             'id' => 'id_option',
                             'name' => 'name',
-                        ),
+                        ],
                         'required' => true,
-                    ),
-                ),
-                'submit' => array(
+                    ],
+                ],
+                'submit' => [
                     'name' => 'blueexpressGeneral',
                     'title' => $this->module->l('Save'),
                     'class' => 'btn btn-default pull-right',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         return $form;
     }
@@ -222,7 +196,7 @@ class BxConfig
     private function saveDefaultConfigValues($config_options)
     {
         $protocol_link = (Configuration::get('PS_SSL_ENABLED') || Tools::usingSecureMode()) ? 'https://' : 'http://';
-        $useSSL = ((Configuration::get('PS_SSL_ENABLED')) || Tools::usingSecureMode()) ? true : false;
+        $useSSL = (Configuration::get('PS_SSL_ENABLED') || Tools::usingSecureMode()) ? true : false;
         $protocol_content = ($useSSL) ? 'https://' : 'http://';
         $link = new Link($protocol_link, $protocol_content);
 
@@ -230,7 +204,7 @@ class BxConfig
             $ipn_url = $link->getModuleLink(
                 'blueexpress',
                 'notification',
-                array(),
+                [],
                 null,
                 null,
                 Configuration::get('PS_SHOP_DEFAULT')
@@ -272,11 +246,11 @@ class BxConfig
     {
         $output = null;
 
-        $default_state = (string)Tools::getValue('BX_DEF_STATE');
-        $paid_state = (string)Tools::getValue('BX_PAID_STATE');
-        $packet_estimation = (string)Tools::getValue('BX_PACKET_ESTIMATION_METHOD');
-        $packet_default = (string)Tools::getValue('BX_PACKET_ESTIMATION_DEFAULT');
-        $branch_price = (string)Tools::getValue('BX_BRANCH_PRICE');
+        $default_state = (string) Tools::getValue('BX_DEF_STATE');
+        $paid_state = (string) Tools::getValue('BX_PAID_STATE');
+        $packet_estimation = (string) Tools::getValue('BX_PACKET_ESTIMATION_METHOD');
+        $packet_default = (string) Tools::getValue('BX_PACKET_ESTIMATION_DEFAULT');
+        $branch_price = (string) Tools::getValue('BX_BRANCH_PRICE');
 
         if (!$default_state) {
             $output .= $this->module->displayError(
@@ -303,7 +277,7 @@ class BxConfig
             $output .= $this->module->displayError(
                 $this->module->l(
                     'Debe elegir el tamaño del paquete para estimar
-                    con la modalidad "Paquete default"'
+                    con la modalidad `Paquete default`'
                 )
             );
         } elseif (!preg_match('/^\d*$/', $branch_price, $res)) {
@@ -332,53 +306,53 @@ class BxConfig
 
     private function authForm()
     {
-        $form = array(
-            'form' => array(
-                'legend' => array(
-                    'title' => $this->module->l('Datos de acceso'),
-                    'icon' => 'icon-lock',
-                ),
-                'description' => $this->module->l(
-                    'Para configurar tus preferencias de
-                    envío ingresá a tu cuenta de Blue Express '
-                ),
-                'input' => array(
-                    array(
-                        'type' => 'text',
-                        'label' => $this->module->l('BX CLIENT_ACCOUNT'),
-                        'name' => 'BX_CLIENT',
-                        'size' => 40,
-                        'required' => true,
+        $form = [
+            'form' => [
+                    'legend' => [
+                        'title' => $this->module->l('Datos de acceso'),
+                        'icon' => 'icon-lock',
+                    ],
+                    'description' => $this->module->l(
+                        'Para configurar tus preferencias de
+                        envío ingresá a tu cuenta de Blue Express '
                     ),
-                    array(
-                        'type' => 'text',
-                        'label' => $this->module->l('BX TOKEN'),
-                        'name' => 'BX_TOKEN',
-                        'size' => 40,
-                        'required' => true,
-                    ),
-                    array(
-                        'type' => 'text',
-                        'label' => $this->module->l('BX USER CODE'),
-                        'name' => 'BX_USERCODE',
-                        'size' => 40,
-                        'required' => true,
-                    ),
-                    array(
-                        'type' => 'text',
-                        'label' => $this->module->l('BX API KEY'),
-                        'name' => 'BX_APIKEY',
-                        'size' => 40,
-                        'required' => true,
-                    ),
-                ),
-                'submit' => array(
-                    'name' => 'bxAuth',
-                    'title' => $this->module->l('Save'),
-                    'class' => 'btn btn-default pull-right',
-                ),
-            ),
-        );
+                    'input' => [
+                        [
+                            'type' => 'text',
+                            'label' => $this->module->l('BX CLIENT_ACCOUNT'),
+                            'name' => 'BX_CLIENT',
+                            'size' => 40,
+                            'required' => true,
+                        ],
+                        [
+                            'type' => 'text',
+                            'label' => $this->module->l('BX TOKEN'),
+                            'name' => 'BX_TOKEN',
+                            'size' => 40,
+                            'required' => true,
+                        ],
+                        [
+                            'type' => 'text',
+                            'label' => $this->module->l('BX USER CODE'),
+                            'name' => 'BX_USERCODE',
+                            'size' => 40,
+                            'required' => true,
+                        ],
+                        [
+                            'type' => 'text',
+                            'label' => $this->module->l('BX API KEY'),
+                            'name' => 'BX_APIKEY',
+                            'size' => 40,
+                            'required' => true,
+                        ],
+                    ],
+                    'submit' => [
+                        'name' => 'bxAuth',
+                        'title' => $this->module->l('Save'),
+                        'class' => 'btn btn-default pull-right',
+                    ],
+            ],
+        ];
 
         return $form;
     }
@@ -387,13 +361,11 @@ class BxConfig
     {
         $output = null;
 
-        $api_key = (string)Tools::getValue('BX_CLIENT');
-        $secret_key = (string)Tools::getValue('BX_TOKEN');
-        $user_code = (string)Tools::getValue('BX_USERCODE');
-        $bxkey = (string)Tools::getValue('BX_APIKEY');
-        if (!$api_key || empty($api_key) || !$secret_key || empty($secret_key)
-            || !$user_code || empty($user_code) || !$bxkey || empty($bxkey)
-        ) {
+        $api_key = (string) Tools::getValue('BX_CLIENT');
+        $secret_key = (string) Tools::getValue('BX_TOKEN');
+        $user_code = (string) Tools::getValue('BX_USERCODE');
+        $bxkey = (string) Tools::getValue('BX_APIKEY');
+        if (!$api_key || !$secret_key || !$user_code || !$bxkey) {
             $output .= $this->module->displayError(
                 $this->module->l(
                     'Los datos proporcionados no son válidos'
@@ -415,16 +387,12 @@ class BxConfig
             );
 
             $dbinstance = Db::getInstance();
-            $tablaBd = "SELECT `id_local_carrier` FROM `" . _DB_PREFIX_ .
-            "blueexpress_carrier` WHERE `modality` = 'D'";
+            $tablaBd = 'SELECT `id_local_carrier` FROM `' . _DB_PREFIX_ .
+            'blueexpress_carrier` WHERE `modality` = `D`';
             $results = $dbinstance->ExecuteS($tablaBd);
             foreach ($results as $row) {
                 $id_local_carrier = $row['id_local_carrier'];
-                $dbinstance->delete(
-                    "carrier",
-                    "`id_carrier` = '$id_local_carrier'",
-                    1
-                );
+                $dbinstance->delete('carrier', 'id_carrier = ' . $id_local_carrier, 1);
             }
 
             $carriers_list = $this->module->BxApi->getCarriers();
@@ -461,11 +429,11 @@ class BxConfig
     {
         $output = null;
 
-        $default_weight = (string)Tools::getValue('BX_DEF_WEIGHT');
-        $default_depth =  (string)Tools::getValue('BX_DEF_DEPTH');
-        $default_width =  (string)Tools::getValue('BX_DEF_WIDTH');
-        $default_height = (string)Tools::getValue('BX_DEF_HEIGHT');
-        $default_price =  (string)Tools::getValue('BX_DEF_PRICE');
+        $default_weight = (string) Tools::getValue('BX_DEF_WEIGHT');
+        $default_depth = (string) Tools::getValue('BX_DEF_DEPTH');
+        $default_width = (string) Tools::getValue('BX_DEF_WIDTH');
+        $default_height = (string) Tools::getValue('BX_DEF_HEIGHT');
+        $default_price = (string) Tools::getValue('BX_DEF_PRICE');
 
         if (!$default_price || !$default_weight || !$default_depth || !$default_width || !$default_height) {
             $output .= $this->module->displayError($this->module->l('Los datos proporcionados no son válidos'));
@@ -488,7 +456,7 @@ class BxConfig
         if (!Configuration::get('BX_TABINSTALLED')) {
             $tab = new Tab();
             $tab->id_parent = (int) Tab::getIdFromClassName($parent);
-            $tab->name = array();
+            $tab->name = [];
             foreach (Language::getLanguages(true) as $lang) {
                 $tab->name[$lang['id_lang']] = $name;
             }
@@ -506,10 +474,10 @@ class BxConfig
             }
 
             $dbinstance = Db::getInstance();
-            $dbinstance->delete("authorization_role", "`slug` = 'ROLE_MOD_TAB_ADMINBX_CREATE'", 1);
-            $dbinstance->delete("authorization_role", "`slug` = 'ROLE_MOD_TAB_ADMINBX_DELETE'", 1);
-            $dbinstance->delete("authorization_role", "`slug` = 'ROLE_MOD_TAB_ADMINBX_READ'", 1);
-            $dbinstance->delete("authorization_role", "`slug` = 'ROLE_MOD_TAB_ADMINBX_UPDATE'", 1);
+            $dbinstance->delete('authorization_role', '`slug` = `ROLE_MOD_TAB_ADMINBX_CREATE`', 1);
+            $dbinstance->delete('authorization_role', '`slug` = `ROLE_MOD_TAB_ADMINBX_DELETE`', 1);
+            $dbinstance->delete('authorization_role', '`slug` = `ROLE_MOD_TAB_ADMINBX_READ`', 1);
+            $dbinstance->delete('authorization_role', '`slug` = `ROLE_MOD_TAB_ADMINBX_UPDATE`', 1);
 
             if (!Configuration::get('BX_TABINSTALLED')) {
                 if (!$tab->save()) {

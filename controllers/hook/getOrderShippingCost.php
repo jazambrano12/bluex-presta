@@ -7,11 +7,8 @@
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  BlueExpressGetOrderShippingCostController
- * @package   BlueExpressGetOrderShippingCost 
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 require_once dirname(__FILE__) . '/../../classes/BxCarrier.php';
 require_once dirname(__FILE__) . '/../../classes/BxRelayManager.php';
 require_once dirname(__FILE__) . '/../../classes/BxCartHelper.php';
@@ -20,11 +17,9 @@ require_once dirname(__FILE__) . '/../../classes/BxCartHelper.php';
  * BlueExpress Get Order Shipping Cost
  *
  * @category BlueExpressGetOrderShippingCostController
- * @package  BlueExpressGetOrderShippingCost
  * @author   BlueExpress
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
 class BlueExpressGetOrderShippingCostController
 {
@@ -39,7 +34,6 @@ class BlueExpressGetOrderShippingCostController
     public function run($cart, $shipping_cost)
     {
         foreach ($cart->getProducts() as $indice => $product) {
-
             $itemCart[] = [
                 'largo' => $product['depth'],
                 'ancho' => $product['width'],
@@ -70,8 +64,8 @@ class BlueExpressGetOrderShippingCostController
          */
         $cost = $this->module->BxApi->getCotizacionADomicilio(
             $city,
-            $cart_weight, 
-            $carrier->service_type, 
+            $cart_weight,
+            $carrier->service_type,
             $itemCart
         );
         if ($shipping_cost > 0) {
@@ -85,7 +79,7 @@ class BlueExpressGetOrderShippingCostController
     {
         $relay_manager = new BxRelayManager();
         $cost = $relay_manager->getShippingRelaypoint($id_cart);
-        return isset($cost['price']) ? $cost['price'] : Configuration::get("BX_BRANCH_PRICE");
+        return isset($cost['price']) ? $cost['price'] : Configuration::get('BX_BRANCH_PRICE');
     }
 
     private function get_relaycost($cart, $province_id, $cart_weight, $products_dimensions)
@@ -124,7 +118,7 @@ class BlueExpressGetOrderShippingCostController
 
     public static function getCartWeight($cart, $id_carrier)
     {
-        $defWeight = Configuration::get("BX_DEF_WEIGHT");
+        $defWeight = Configuration::get('BX_DEF_WEIGHT');
 
         $products = $cart->getProducts();
         $weight = 0;
@@ -171,21 +165,21 @@ class BlueExpressGetOrderShippingCostController
     public static function getCartDimensions($cart)
     {
         $products = $cart->getProducts();
-        $dimensions = array();
+        $dimensions = [];
 
         foreach ($products as $product) {
             if (min($product['width'], $product['height'], $product['depth']) <= 0) {
-                $dimensions[] = array(
-                    'width' => Configuration::get("ENVIOPACK_DEF_WIDTH"),
-                    'height' => Configuration::get("ENVIOPACK_DEF_HEIGHT"),
-                    'depth' => Configuration::get("ENVIOPACK_DEF_DEPTH"),
-                );
+                $dimensions[] = [
+                    'width' => Configuration::get('ENVIOPACK_DEF_WIDTH'),
+                    'height' => Configuration::get('ENVIOPACK_DEF_HEIGHT'),
+                    'depth' => Configuration::get('ENVIOPACK_DEF_DEPTH'),
+                ];
             } else {
-                $dimensions[] = array(
-                    'width' => $product['width'],
-                    'height' => $product['height'],
-                    'depth' => $product['depth'],
-                );
+                $dimensions[] = [
+                        'width' => $product['width'],
+                        'height' => $product['height'],
+                        'depth' => $product['depth'],
+                    ];
             }
         }
 

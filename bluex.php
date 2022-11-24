@@ -5,34 +5,38 @@
  * Author: Blue Express
  * link: https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  * Version: 1.0.0
- */ 
+ * @author Blue Express
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-//Define default api keys
+// Define default api keys
 define('BLUEX_DEFAULT_CLIENT', '');
 define('BLUEX_DEFAULT_TOKEN', '');
 define('BLUEX_DEFAULT_USERCODE', '');
-define('BLUEX_DEFAULT_APIKEY', ''); 
+define('BLUEX_DEFAULT_APIKEY', '');
 
 class Bluex extends CarrierModule
 {
     public $id_carrier;
     private $_html = '';
-    private $_postErrors = array();
+    private $_postErrors = [];
     private $_moduleName = 'bluex';
     protected $context;
-    protected $BXhooks = array(
+    protected $BXhooks = [
         'actionCarrierUpdate',
         'displayAfterCarrier',
         'orderConfirmation',
         'actionOrderStatusPostUpdate',
         'actionValidateOrder',
         'actionPaymentConfirmation',
-    );
+    ];
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->name = 'bluex';
         $this->tab = 'shipping_logistics';
         $this->version = '1.0.0';
@@ -49,7 +53,7 @@ class Bluex extends CarrierModule
         $this->BxConfig = new BxConfig($this);
         $this->BxApi = BxApi::getInstance();
 
-        $config = Configuration::getMultiple(array('BX_CLIENT', 'BX_TOKEN', 'USERCODE', 'BX_APIKEY'));
+        $config = Configuration::getMultiple('BX_CLIENT', 'BX_TOKEN', 'USERCODE', 'BX_APIKEY');
 
         if (!empty($config['BX_CLIENT'])) {
             $this->bx_client = $config['BX_CLIENT'];
@@ -71,7 +75,8 @@ class Bluex extends CarrierModule
         $this->description = $this->l('Blue Express - Lo traemos para ti.');
     }
 
-    public function install() {
+    public function install()
+    {
         if (parent::install()) {
             foreach ($this->BXhooks as $hook) {
                 if (!$this->registerHook($hook)) {
@@ -89,7 +94,8 @@ class Bluex extends CarrierModule
         return false;
     }
 
-    public function loadSQLFile($sql_file) {
+    public function loadSQLFile($sql_file)
+    {
         $sql_content = Tools::file_get_contents($sql_file);
 
         $sql_content = str_replace('PREFIX_', _DB_PREFIX_, $sql_content);
@@ -97,7 +103,6 @@ class Bluex extends CarrierModule
 
         $result = true;
         foreach ($sql_requests as $request) {
-
             if (!empty($request)) {
                 $result &= Db::getInstance()->execute(trim($request));
             }
@@ -106,7 +111,8 @@ class Bluex extends CarrierModule
         return $result;
     }
 
-    public function uninstall() {
+    public function uninstall()
+    {
         if (parent::uninstall()) {
             $sql_file = dirname(__FILE__) . '/install/uninstall.sql';
             if (!$this->loadSQLFile($sql_file)) {
@@ -131,38 +137,42 @@ class Bluex extends CarrierModule
         return false;
     }
 
-    public function getContent() {
+    public function getContent()
+    {
         $output = $this->BxConfig->processConfiguration();
         $output .= $this->BxConfig->displayConfigurationForm();
-        $this->context->controller->addJS(($this->_path) . 'views/js/bluex-config.js');
+        $this->context->controller->addJS($this->_path . 'views/js/bluex-config.js');
         return $output;
     }
 
-    public function getHookController($hook_name) {
+    public function getHookController($hook_name)
+    {
         require_once dirname(__FILE__) . '/controllers/hook/' . $hook_name . '.php';
         $controller_name = 'BlueExpress' . $hook_name . 'Controller';
         $controller = new $controller_name($this, __FILE__, $this->_path);
         return $controller;
     }
 
-    public function getOrderShippingCostExternal($params) {
+    public function getOrderShippingCostExternal($params)
+    {
         return $this->getOrderShippingCost($params, 0);
     }
 
-    public function getOrderShippingCost($params, $shipping_cost) {
-
+    public function getOrderShippingCost($params, $shipping_cost)
+    {
         $controller = $this->getHookController('getOrderShippingCost');
         return $controller->run($params, $shipping_cost);
     }
 
-    public function hookUpdateCarrier($params) {
+    public function hookUpdateCarrier($params)
+    {
         $controller = $this->getHookController('updateCarrier');
         return $controller->run($params);
     }
 
-    public function hookActionOrderStatusPostUpdate($params) {
+    public function hookActionOrderStatusPostUpdate($params)
+    {
         $controller = $this->getHookController('actionOrderStatusPostUpdate');
         return $controller->run($params);
     }
-
 }

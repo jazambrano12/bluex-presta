@@ -6,11 +6,8 @@
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  BxOrderModule
- * @package   BxOrder
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 require_once dirname(__FILE__) . '/BxOrderModel.php';
 
 /**
@@ -19,9 +16,7 @@ require_once dirname(__FILE__) . '/BxOrderModel.php';
  * @copyright 2022 Blue Express
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category BxOrderModule
- * @package  BxOrder
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
 class BxOrder
 {
@@ -40,7 +35,6 @@ class BxOrder
 
     public function save()
     {
-
         $this->last_response = $this->bx_api->makeOrder($this->order_detail);
 
         if (key_exists('id', $this->last_response)) {

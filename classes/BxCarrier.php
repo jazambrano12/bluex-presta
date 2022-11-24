@@ -6,11 +6,8 @@
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  BxCarrierModule
- * @package   BxCarrier
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 require_once dirname(__FILE__) . '/BxCarrierModel.php';
 
 /**
@@ -19,11 +16,8 @@ require_once dirname(__FILE__) . '/BxCarrierModel.php';
  * @copyright 2022 Blue Express
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category BxCarrierModule
- * @package  BxCarrier
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 class BxCarrier
 {
     public $id_local; /* ID de Obj Carrier en PS */
@@ -43,12 +37,12 @@ class BxCarrier
         if ($id_local_carrier > 0) {
             $this->id_local = $id_local_carrier;
             $this->id_remote = $this->model->getValue(
-                "id_remote_carrier",
-                "id_local_carrier=" . $id_local_carrier
+                'id_remote_carrier',
+                'id_local_carrier=' . $id_local_carrier
             );
             $this->id_db = $this->model->getValue(
-                "id_carrier",
-                "id_local_carrier=" . $id_local_carrier
+                'id_carrier',
+                'id_local_carrier=' . $id_local_carrier
             );
 
             if ($this->id_db <= 0) {
@@ -56,52 +50,46 @@ class BxCarrier
             }
 
             $this->modality = $this->model->getValue(
-                "modality",
-                "id_carrier=" . $this->id_db
+                'modality',
+                'id_carrier=' . $this->id_db
             );
             $this->service_type = $this->model->getValue(
-                "service_type",
-                "id_carrier=" . $this->id_db
+                'service_type',
+                'id_carrier=' . $this->id_db
             );
             $this->description = $this->model->getValue(
-                "description",
-                "id_carrier=" . $this->id_db
+                'description',
+                'id_carrier=' . $this->id_db
             );
         } elseif ($id_db > 0) {
             $this->id_db = $id_db;
             $this->id_remote = $this->model->getValue(
-                "id_remote_carrier",
-                "id_carrier=" . $id_db
+                'id_remote_carrier',
+                'id_carrier=' . $id_db
             );
             $this->id_local = $this->model->getValue(
-                "id_local_carrier",
-                "id_carrier=" . $id_db
+                'id_local_carrier',
+                'id_carrier=' . $id_db
             );
 
             $this->modality = $this->model->getValue(
-                "modality",
-                "id_carrier=" . $this->id_db
+                'modality',
+                'id_carrier=' . $this->id_db
             );
             $this->service_type = $this->model->getValue(
-                "service_type",
-                "id_carrier=" . $this->id_db
+                'service_type',
+                'id_carrier=' . $this->id_db
             );
             $this->description = $this->model->getValue(
-                "description",
-                "id_carrier=" . $this->id_db
+                'description',
+                'id_carrier=' . $this->id_db
             );
         }
     }
 
     public function add($active = 0)
     {
-        $idL = $this->id_local;
-        $idR = $this->id_remote;
-        $hR  = $this->has_relaypoint;
-        $sT  = $this->service_type;
-        $md  = $this->modality;
-
-        if (isset($idL) && isset($idR) && isset($hR) && isset($sT) && isset($md)) {
+        if (isset($this->id_local) && isset($this->id_remote) && isset($this->has_relaypoint) && isset($this->service_type) && isset($this->modality)) {
             $this->model->addCarrier(
                 $this->id_local,
                 $this->id_remote,
@@ -120,15 +108,15 @@ class BxCarrier
 
     public function update()
     {
-        $data = array(
-            "id_local_carrier" => $this->id_local,
-            "id_remote_carrier" => $this->id_remote,
-            "has_relaypoint" => $this->has_relaypoint,
-            "service_type" => $this->service_type,
-            "modality" => $this->modality,
-        );
+        $data = [
+            'id_local_carrier' => $this->id_local,
+            'id_remote_carrier' => $this->id_remote,
+            'has_relaypoint' => $this->has_relaypoint,
+            'service_type' => $this->service_type,
+            'modality' => $this->modality,
+        ];
 
-        $this->model->update($data, "id_carrier=" . $this->id_db);
+        $this->model->update($data, 'id_carrier=' . $this->id_db);
     }
 
     public function delete()
@@ -139,8 +127,8 @@ class BxCarrier
     public function hasRelayPoints()
     {
         $has_relay = $this->model->getValue(
-            "has_relaypoint",
-            "id_carrier=" . $this->id_db
+            'has_relaypoint',
+            'id_carrier=' . $this->id_db
         );
         return $has_relay;
     }
@@ -165,7 +153,7 @@ class BxCarrier
 
     public function activate()
     {
-        $data = array("active" => 1);
-        $this->model->update($data, "id_carrier=" . $this->id_db);
+        $data = ['active' => 1];
+        $this->model->update($data, 'id_carrier=' . $this->id_db);
     }
 }

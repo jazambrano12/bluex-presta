@@ -6,11 +6,8 @@
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  BxPackageModule
- * @package   BxPackage
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 require_once dirname(__FILE__) . '/BxConfig.php';
 
 /**
@@ -19,9 +16,7 @@ require_once dirname(__FILE__) . '/BxConfig.php';
  * @copyright 2022 Blue Express
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category BxPackageModule
- * @package  BxPackage
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
 class BxPackage
 {
@@ -37,16 +32,16 @@ class BxPackage
 
     public function getSizes()
     {
-        $return = array();
-        $dimensions = array();
+        $return = [];
+        $dimensions = [];
         $weight = 0;
         foreach ($this->product_list as $product) {
-            $dim = array(
+            $dim = [
                 'depth' => $this->getDepth($product),
                 'height' => $this->getHeight($product),
                 'width' => $this->getWidth($product),
-            );
-            for ($i = 0; $i < $product['product_quantity']; $i++) {
+            ];
+            for ($i = 0; $i < $product['product_quantity']; ++$i) {
                 $dimensions[] = $dim;
                 $weight += $this->getWeight($product);
             }
@@ -54,12 +49,12 @@ class BxPackage
 
         $dimensions = explode('x', $this->getPacketEstimatedSize($dimensions));
 
-        $return[] = array(
-            "alto" => $dimensions[0],
-            "ancho" => $dimensions[1],
-            "largo" => $dimensions[2],
-            "peso" => $weight,
-        );
+        $return[] = [
+            'alto' => $dimensions[0],
+            'ancho' => $dimensions[1],
+            'largo' => $dimensions[2],
+            'peso' => $weight,
+        ];
 
         return $return;
     }
@@ -67,7 +62,7 @@ class BxPackage
     private function getDepth($product)
     {
         if ($product['depth'] == 0) {
-            $depth = Configuration::get("BX_DEF_DEPTH");
+            $depth = Configuration::get('BX_DEF_DEPTH');
         } else {
             $depth = $product['depth'];
         }
@@ -78,7 +73,7 @@ class BxPackage
     private function getHeight($product)
     {
         if ($product['height'] == 0) {
-            $height = Configuration::get("BX_DEF_HEIGHT");
+            $height = Configuration::get('BX_DEF_HEIGHT');
         } else {
             $height = $product['height'];
         }
@@ -89,7 +84,7 @@ class BxPackage
     private function getWidth($product)
     {
         if ($product['width'] == 0) {
-            $width = Configuration::get("BX_DEF_WIDTH");
+            $width = Configuration::get('BX_DEF_WIDTH');
         } else {
             $width = $product['width'];
         }
@@ -100,7 +95,7 @@ class BxPackage
     private function getWeight($product)
     {
         if ($product['weight'] == 0) {
-            $weight = Configuration::get("BX_DEF_WEIGHT");
+            $weight = Configuration::get('BX_DEF_WEIGHT');
         } else {
             $weight = $product['weight'];
         }
@@ -110,14 +105,14 @@ class BxPackage
 
     public function getEstimatedPackage()
     {
-        $dimensions = array();
+        $dimensions = [];
         foreach ($this->product_list as $product) {
-            $dim = array(
+            $dim = [
                 'depth' => $this->getDepth($product),
                 'height' => $this->getHeight($product),
                 'width' => $this->getWidth($product),
-            );
-            for ($i = 0; $i < $product['product_quantity']; $i++) {
+            ];
+            for ($i = 0; $i < $product['product_quantity']; ++$i) {
                 $dimensions[] = $dim;
             }
         }
@@ -127,7 +122,7 @@ class BxPackage
 
     public static function getPacketEstimatedSize($dimensiones)
     {
-        $estimation_method = Configuration::get("BX_PACKET_ESTIMATION_METHOD");
+        $estimation_method = Configuration::get('BX_PACKET_ESTIMATION_METHOD');
 
         switch ($estimation_method) {
             case BxConfig::ESTIMATION_SUM_DIMS:
@@ -154,7 +149,7 @@ class BxPackage
             $paquete = implode('x', $dimensiones[0]);
         } else {
             $all_equal_size = true;
-            for ($i = 0; $i < count($dimensiones) - 1; $i++) {
+            for ($i = 0; $i < count($dimensiones) - 1; ++$i) {
                 if ($dimensiones[$i] != $dimensiones[$i + 1]) {
                     $all_equal_size = false;
                 }
@@ -182,8 +177,7 @@ class BxPackage
 
     private static function maxDimEstimation($dimensiones)
     {
-
-        $allDimen = array();
+        $allDimen = [];
         foreach ($dimensiones as $producto_dimension) {
             foreach ($producto_dimension as $value) {
                 $allDimen[] = $value;

@@ -7,11 +7,8 @@
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  BlueexpressOrderConfirmationController
- * @package   BlueexpressOrderConfirmation
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 require_once dirname(__FILE__) . '/../../classes/BxRelayManager.php';
 require_once dirname(__FILE__) . '/../../classes/BxCarrier.php';
 
@@ -19,11 +16,9 @@ require_once dirname(__FILE__) . '/../../classes/BxCarrier.php';
  * BlueExpress Order Confirmation
  *
  * @category BlueexpressOrderConfirmationController
- * @package  BlueexpressOrderConfirmation
  * @author   BlueExpress
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
 class BlueexpressOrderConfirmationController
 {
@@ -46,6 +41,5 @@ class BlueexpressOrderConfirmationController
 
         $carrier = new BxCarrier($params['order']->id_carrier);
         $relay_manager->deleteShippingRelaypoint($params['order']->id_cart);
-
     }
 }

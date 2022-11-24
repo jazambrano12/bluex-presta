@@ -5,12 +5,9 @@
  * @author   BlueExpress
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
- * @category  BxRelayManagerModule
- * @package   BxRelayManager
+ * @category  BxRelayManagerModul
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 require_once dirname(__FILE__) . '/BxRelayPointModel.php';
 require_once dirname(__FILE__) . '/BxCarrierManager.php';
 require_once dirname(__FILE__) . '/BxRelayPoint.php';
@@ -21,9 +18,7 @@ require_once dirname(__FILE__) . '/BxRelayPoint.php';
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  BxRelayManagerModule
- * @package   BxRelayManager
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
 class BxRelayManager
 {
@@ -62,7 +57,7 @@ class BxRelayManager
     /* Verifica la existencia de un relaypoint localmente */
     private function relayExist($id_remote_relay)
     {
-        $relay_point = $this->relaypoint_model->getRelaypoint("id_remote_relay=" . $id_remote_relay);
+        $relay_point = $this->relaypoint_model->getRelaypoint('id_remote_relay=' . $id_remote_relay);
 
         if (is_array($relay_point)) {
             return true;
@@ -77,7 +72,7 @@ class BxRelayManager
         return $this->relaypoint_model->getRelaypointList($carrier->id_db);
     }
 
-    /* Guarda temporalmente la relación del carrito con el punto de relay*/
+    /* Guarda temporalmente la relación del carrito con el punto de relay */
     public function setShippingRelaypoint($id_cart, $relay)
     {
         if ($relay['office_id'] === -1) {
@@ -109,17 +104,17 @@ class BxRelayManager
 
     public function getRelayPointById($id)
     {
-        return $this->relaypoint_model->getRelaypoint("id_relaypoint=" . $id);
+        return $this->relaypoint_model->getRelaypoint('id_relaypoint=' . $id);
     }
 
     /* Devuelve las sucursales de una localidad */
     public function getRelayPointByLocality($locality_id, $id_carrier)
     {
-        return $this->relaypoint_model->getRelaypoints("locality=" . $locality_id . " and id_carrier=" . $id_carrier);
+        return $this->relaypoint_model->getRelaypoints('locality=' . $locality_id . ' and id_carrier=' . $id_carrier);
     }
 
     public function getRemoteCarrierId($id_relaypoint)
     {
-        return $this->relaypoint_model->getColumn("id_remote_carrier", "id_relaypoint=" . $id_relaypoint);
+        return $this->relaypoint_model->getColumn('id_remote_carrier', 'id_relaypoint=' . $id_relaypoint);
     }
 }

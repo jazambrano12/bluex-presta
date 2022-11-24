@@ -17,7 +17,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 require_once dirname(__FILE__) . '/../../config/config.inc.php';
 require_once dirname(__FILE__) . '/../../init.php';
 require_once dirname(__FILE__) . '/classes/BxRelayManager.php';
@@ -34,16 +33,14 @@ if (Configuration::get('BX_CLIENT') && Configuration::get('BX_TOKEN') && Configu
     $BxApi->setSecretKey(Configuration::get('BX_TOKEN'));
     $BxApi->setUserCode(Configuration::get('BX_USERCODE'));
     $BxApi->setBxKey(Configuration::get('BX_APIKEY'));
-} else {
-    die();
 }
 
-switch (tools::getValue('method')) {
+switch (Tools::getValue('method')) {
     /* Devuelve la lista de sucursales, dependiendo de la localidad */
     case 'getRelayPoints':
-        $locality = tools::getValue('locality');
-        $id_carrier = tools::getValue('id_carrier');
-        $weight = tools::getValue('weight');
+        $locality = Tools::getValue('locality');
+        $id_carrier = Tools::getValue('id_carrier');
+        $weight = Tools::getValue('weight');
 
         $cart = Context::getContext()->cart;
         $dimesions = BxCartHelper::getCartDimensions($cart);
@@ -53,7 +50,7 @@ switch (tools::getValue('method')) {
         $province = $state->iso_code;
 
         $relaypoints = $relay_manager->getRelayPointByLocality($locality, $id_carrier);
-        $relaypoint_list = array();
+        $relaypoint_list = [];
         foreach ($relaypoints as $relaypoint) {
             $response = $BxApi->getCotizacionSucursal($relaypoint['id_remote_carrier'], $province, $locality, $weight, $dimesions, $cart->getOrderTotal(true, 4));
 
@@ -65,85 +62,82 @@ switch (tools::getValue('method')) {
                     $relaypoint['cost'] = $cost;
                     $relaypoint['time'] = $time;
                     $relaypoint_list[] = $relaypoint;
-
                 }
             }
         }
 
-        echo Tools::jsonEncode($relaypoint_list);
+        echo json_encode($relaypoint_list);
         break;
 
-    /* Devuelve la sucursal (temporal) a donde realizar el envio */
+        /* Devuelve la sucursal (temporal) a donde realizar el envio */
     case 'getRelayPoint':
-        $id_cart = tools::getValue('enviopack_cart_id');
+        $id_cart = Tools::getValue('enviopack_cart_id');
 
         $relay = $relay_manager->getShippingRelaypoint($id_cart);
 
-        echo tools::jsonEncode(array("status" => "ok", "data" => $relay));
+        echo json_encode(['status' => 'ok', 'data' => $relay]);
 
         break;
 
-    /* Establece la sucursal a donde realizar el envio */
+        /* Establece la sucursal a donde realizar el envio */
     case 'setRelayPoint':
-        $id_cart = tools::getValue('enviopack_cart_id');
-        $relay = array(
-            'office_id' => tools::getValue('office_id'),
-            'office_address' => tools::getValue('office_address'),
-            'office_service' => tools::getValue('office_service'),
-            'office_price' => tools::getValue('office_price'),
-            'office_name' => tools::getValue('office_name'),
-        );
+        $id_cart = Tools::getValue('enviopack_cart_id');
+        $relay = [
+            'office_id' => Tools::getValue('office_id'),
+            'office_address' => Tools::getValue('office_address'),
+            'office_service' => Tools::getValue('office_service'),
+            'office_price' => Tools::getValue('office_price'),
+            'office_name' => Tools::getValue('office_name'),
+        ];
 
         $relay_manager->setShippingRelaypoint($id_cart, $relay);
 
-        echo tools::jsonEncode(array("status" => "ok"));
+        echo json_encode(['status' => 'ok']);
 
         break;
-    /* Actualiza la direccion de un pedido */
+        /* Actualiza la direccion de un pedido */
     case 'updateOrder':
         $orderModel = new BxOrderModel();
 
-        $key = tools::getValue("key");
-        $val = tools::getValue("val");
-        $id = tools::getValue("id");
+        $key = Tools::getValue('key');
+        $val = Tools::getValue('val');
+        $id = Tools::getValue('id');
 
-        $data = array($key => "$val");
+        $data = [$key => '$val'];
 
-        $orderModel->update($data, "id_ps_order=" . $id);
+        $orderModel->update($data, 'id_ps_order=' . $id);
 
         break;
-    /* Actualiza la direccion de un pedido */
+        /* Actualiza la direccion de un pedido */
     case 'setOrderCarrier':
         $orderModel = new BxOrderModel();
 
-        $carrier = tools::getValue("carrier");
-        $id = tools::getValue("id");
+        $carrier = Tools::getValue('carrier');
+        $id = Tools::getValue('id');
 
-        $data = array("carrier_id" => $carrier);
-        $orderModel->update($data, "id_order=" . $id);
+        $data = ['carrier_id' => $carrier];
+        $orderModel->update($data, 'id_order=' . $id);
 
         break;
 
-    /* Obtiene el la etiqueta de un pedido */
+        /* Obtiene el la etiqueta de un pedido */
     case 'getOrderLabel':
-
         $ids = Tools::getValue('selected');
-        header('Content-type: application/pdf');
-        header('Content-Disposition: attachment; filename="downloaded.pdf"');
+        header('Content-type: application/pdf', 'Content-Disposition: attachment; filename = downloaded.pdf');
 
         echo $BxApi->get_labels($ids);
 
         break;
 
-    /* Webhook para cambiar el estado */
-    /* DEPRECADO */
+        /* Webhook para cambiar el estado */
+        /* DEPRECADO */
     case 'shipmentProcessed':
         $id = Tools::getValue('id');
 
         if ($id > 0) {
             $orderModel = new BxOrderModel();
 
-            $order_row = $orderModel->get("id_shipment=" . $id);
+            $order_row = $orderModel->get('id_shipment=' . $id);
             $order = new Order($order_row['id_order']);
             $order->setCurrentState((int) Configuration::get('BX_DEF_STATE'));
 
@@ -163,7 +157,7 @@ switch (tools::getValue('method')) {
         if ($id > 0 && ($tipo == 'envio-procesado' || $tipo == 'envio-cambio-condicion')) {
             $orderModel = new BxOrderModel();
 
-            $order_row = $orderModel->get("id_shipment=" . $id);
+            $order_row = $orderModel->get('id_shipment=' . $id);
             $order_id = isset($order_row['id_ps_order']) ? $order_row['id_ps_order'] : $order_row['id_order'];
             $order = new Order($order_id);
             if ($tipo == 'envio-procesado') {
@@ -180,23 +174,23 @@ switch (tools::getValue('method')) {
 
         break;
 
-    /* Establece el carrier a un pedido */
+        /* Establece el carrier a un pedido */
     case 'setCarrier':
         $orderModel = new BxOrderModel();
 
         $id_order = Tools::getValue('order');
         $id_carrier = Tools::getValue('carrier');
 
-        $data = array("carrier_id" => $id_carrier);
+        $data = ['carrier_id' => $id_carrier];
 
-        $orderModel->update($data, "id_ps_order=" . $id_order);
+        $orderModel->update($data, 'id_ps_order=' . $id_order);
 
-        echo json_encode(array("status" => "ok"));
+        echo json_encode(['status' => 'ok']);
         break;
 
-    /* Set a relay to an order */
+        /* Set a relay to an order */
     case 'RegisterRelay':
-        echo json_encode(array("status" => "cagate"));
+        echo json_encode(['status' => 'cagate']);
         break;
 
     default:
@@ -205,7 +199,7 @@ switch (tools::getValue('method')) {
 
 function getCartWeight($cart, $id_carrier)
 {
-    $defWeight = Configuration::get("BX_DEF_WEIGHT");
+    $defWeight = Configuration::get('BX_DEF_WEIGHT');
 
     $products = $cart->getProducts();
     $weight = 0;
@@ -252,23 +246,22 @@ function getCartWeight($cart, $id_carrier)
 function getCartDimensions($cart)
 {
     $products = $cart->getProducts();
-    $dimensions = array();
+    $dimensions = [];
     foreach ($products as $product) {
-        for ($i = 0; $i < $product['cart_quantity']; $i++) {
+        for ($i = 0; $i < $product['cart_quantity']; ++$i) {
             if (min($product['width'], $product['height'], $product['depth']) <= 0) {
-                $dimensions[] = array(
-                    'width' => Configuration::get("BX_DEF_WIDTH"),
-                    'height' => Configuration::get("BX_DEF_HEIGHT"),
-                    'depth' => Configuration::get("BX_DEF_DEPTH"),
-                );
+                $dimensions[] = [
+                    'width' => Configuration::get('BX_DEF_WIDTH'),
+                    'height' => Configuration::get('BX_DEF_HEIGHT'),
+                    'depth' => Configuration::get('BX_DEF_DEPTH'),
+                ];
             } else {
-                $dimensions[] = array(
+                $dimensions[] = [
                     'width' => $product['width'],
                     'height' => $product['height'],
                     'depth' => $product['depth'],
-                );
+                ];
             }
-
         }
     }
 

@@ -7,20 +7,16 @@
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  EnviopackUpdateCarrierController
- * @package   EnviopackUpdateCarrier
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
 
 /**
  * Envio pack Update Carrier
  *
  * @category EnviopackUpdateCarrierController
- * @package  EnviopackUpdateCarrier
  * @author   BlueExpress
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
 class EnviopackUpdateCarrierController
 {

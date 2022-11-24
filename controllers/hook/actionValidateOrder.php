@@ -7,11 +7,8 @@
  * @copyright 2022 Blue Express
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @category  BlueexpressActionValidateOrderController
- * @package   BlueexpressActionValidateOrder
  * @Version   0.1.0
- * @link      https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
  */
-
 require_once _PS_MODULE_DIR_ . '/bluex/classes/BxApi.php';
 require_once _PS_MODULE_DIR_ . '/bluex/classes/BxOrder.php';
 require_once _PS_MODULE_DIR_ . '/bluex/classes/BxOrderModel.php';
@@ -24,13 +21,10 @@ require_once _PS_MODULE_DIR_ . '/bluex/classes/BxShipment.php';
  * BlueExpress Action Validate Order
  *
  * @category BlueexpressActionValidateOrderController
- * @package  BlueexpressActionValidateOrder
  * @author   BlueExpress
  * @license  https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  * @Version  0.1.0
- * @link     https://github.com/Blue-Express/bx-plugin-ecom-prestashop-shipping
- */ 
-
+ */
 class BlueexpressActionValidateOrderController
 {
     public function __construct($module, $file, $path)
